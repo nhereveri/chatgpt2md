@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Download ChatGPT conversation to markdown file",
+  "version": "1.0",
+  "description": "A chrome extension to execute a JS code to download ChatGPT conversation.",
+  "permissions": [
+    "activeTab"
+  ],
+  "action": {
+    "default_icon": {
+      "29": "img/29.png",
+      "40": "img/40.png",
+      "57": "img/57.png",
+      "58": "img/58.png",
+      "60": "img/60.png",
+      "80": "img/80.png",
+      "87": "img/87.png",
+      "114": "img/114.png",
+      "120": "img/120.png",
+      "180": "img/180.png",
+      "1024": "img/1024.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "29": "img/29.png",
+    "40": "img/40.png",
+    "57": "img/57.png",
+    "58": "img/58.png",
+    "60": "img/60.png",
+    "80": "img/80.png",
+    "87": "img/87.png",
+    "114": "img/114.png",
+    "120": "img/120.png",
+    "180": "img/180.png",
+    "1024": "img/1024.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content_script.js"]
+    }
+  ]
+}
