@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Download ChatGPT conversation to markdown",
+  "name": "ChatGPT Markdown Downloader",
   "version": "1.0",
   "description": "A chrome extension to execute a JS code to download ChatGPT conversation.",
   "permissions": [
