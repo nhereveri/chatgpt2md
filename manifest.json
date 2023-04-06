@@ -39,7 +39,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["https://chat.openai.com/chat/*"],
       "js": ["content_script.js"]
     }
   ]
