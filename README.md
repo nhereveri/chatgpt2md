@@ -1,4 +1,4 @@
-# ChatGPT to Markdown
+# ChatGPT Markdown Downloader
 
 The point of this add-on is to get a tool that lets ya download ChatGPT info to a local file in Markdown format.
 
