@@ -3,9 +3,7 @@
   "name": "ChatGPT Markdown Downloader",
   "version": "1.0",
   "description": "A chrome extension to execute a JS code to download ChatGPT conversation.",
-  "permissions": [
-    "activeTab"
-  ],
+  "permissions": [],
   "action": {
     "default_icon": {
       "29": "img/29.png",
@@ -39,7 +37,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://chat.openai.com/chat/*"],
+      "matches": ["https://chat.openai.com/*"],
       "js": ["content_script.js"]
     }
   ]
