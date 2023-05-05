@@ -1,22 +1,37 @@
+function SaveChatGPTtoMD() {
+  const chatMessages = document.querySelectorAll(".text-base");
+  const pageTitle = document.title; const now = new Date(); const dateString = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}`;
+  let fileName = pageTitle + ' - ' + dateString + ".md";
+  let markdownContent = "";
+  for (const message of chatMessages) {
+    
+    if (message.querySelector(".whitespace-pre-wrap")) {
+      let messageText = message.querySelector(".whitespace-pre-wrap").innerHTML;
+      const sender = message.querySelector("img") ? "User" : "ChatGPT";
+      // adds Escapes to non-MD
+      messageText = messageText.replace(/_/gs, "\_").replace(/\*/gs, "\*").replace(/\^/gs, "\^").replace(/~/gs, "\~"); // I debated adding #, > (blockquotes), and | (table)
+      // <p> element and everything in-line or inside
+      messageText = messageText.replace(/<p>(.*?)<\/p>/g, function(match, p1) { return '\n' + p1.replace(/<b>(.*?)<\/b>/g, '**$1**').replace(/<\/?b>/g, "**").replace(/<\/?i>/g, "_").replace(/<code>/g, " `").replace(/<\/code>/g, "` ") + '\n'; });
+      markdownContent += `**${sender}:** ${messageText.trim()}\n\n`;
+    }
+  }
+// Remove Span with only class declaration, there is nesting? If there is more than 5 layers, just do it manually
+  const repeatSpan = /<span class="[^"]*">([^<]*?)<\/span>/gs; markdownContent = markdownContent.replace(repeatSpan, "$1").replace(repeatSpan, "$1").replace(repeatSpan, "$1").replace(repeatSpan, "$1").replace(repeatSpan, "$1");
+// Code Blocks, `text` is the default catch-all (because some commands/code-blocks aren't styled/identified by ChatGPT yet)
+  markdownContent = markdownContent.replace(/<pre>.*?<code[^>]*>(.*?)<\/code>.*?<\/pre>/gs, function(match, p1) { const language = match.match(/class="[^"]*language-([^"\s]*)[^"]*"/); const languageIs = language ? language[1] : 'text'; return '\n``` ' + languageIs + '\n' + p1 + '```\n'; });
+//it looks redundent, but trust me lol...
+  markdownContent = markdownContent.replace(/<p>(.*?)<\/p>/g, function(match, p1) { return '\n' + p1.replace(/<b>(.*?)<\/b>/g, '**$1**').replace(/<\/?b>/g, "**").replace(/<\/?i>/g, "_").replace(/<code>/g, " `").replace(/<\/code>/g, "` ") + '\n'; });
+  markdownContent = markdownContent.replace(/<div class="markdown prose w-full break-words dark:prose-invert dark">/gs, "").replace(/\r?\n?<\/div>\r?\n?/gs, "\n").replace(/\*\*ChatGPT:\*\* <(ol|ul)/gs, "**ChatGPT:**\n<$1").replace(/&gt;/gs, ">").replace(/&lt;/gs, "<").replace(/&amp;/gs, "&");
+  const downloadLink = document.createElement("a");
+  downloadLink.download = fileName;
+  downloadLink.href = URL.createObjectURL(new Blob([markdownContent], { type: "text/markdown" }));
+  downloadLink.style.display = "none";
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'executeScript') {
-    function h(html) {
-      return html.replace(/<p>/g, '\n\n').replace(/<\/p>/g, '').replace(/<b>/g, '**').replace(/<\/b>/g, '**').replace(/<i>/g, '_').replace(/<\/i>/g, '_').replace(/<code[^>]*>/g, (match) => {
-        const lm = match.match(/class="[^"]*language-([^"]*)"/);
-        return lm ? '\n```' + lm[1] + '\n' : '```';
-      }).replace(/<\/code[^>]*>/g, '```').replace(/<[^>]*>/g, '').replace(/Copy code/g, '').replace(/This content may violate our content policy. If you believe this to be in error, please submit your feedback — your input will aid our research in this area./g, '').trim();
-    }(function () {
-      const e = document.querySelectorAll(".text-base");
-      let t = "";
-      for (const s of e) {
-        s.querySelector(".whitespace-pre-wrap") && (t += t == "" ? "" : "--------\n", t += `**${s.querySelectorAll('img').length>1?s.querySelectorAll('img')[1].alt:'ChatGPT'}**: ${h(s.querySelector(".whitespace-pre-wrap").innerHTML)}\n\n`);
-      }
-      const o = document.createElement("a");
-      o.download = (document.querySelector(".pr-14.bg-gray-800")?.innerText.replace(/\.+$/, "") || "Conversation with ChatGPT") + ".md";
-      o.href = URL.createObjectURL(new Blob([t]));
-      o.style.display = "none";
-      document.body.appendChild(o);
-      o.click();
-    })();
+    (() => {SaveChatGPTtoMD();})();
   }
 });
