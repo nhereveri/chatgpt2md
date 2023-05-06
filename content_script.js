@@ -5,11 +5,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return str
           .replace(/[^a-zA-Z0-9\s\u00C0-\u017F]+/g, '')
           .trim()
-          .replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
-            return index === 0 ? word.toLowerCase() : word.toUpperCase();
+          .replace(/(?:^\w|[A-ZÀ-ÿ]|\b\w)/g, function(word, index) {
+            return index === 0 ? word.toLowerCase() : /[a-zA-ZÀ-ÿ]/.test(str[index - 1]) ? word.toLowerCase() : word.toUpperCase();
           })
           .replace(/\s+/g, '');
       }
+
 
       function extractUsername() {
         const usernameElement = document.querySelector("nav > div:last-child > div > button > div:nth-child(2)");
