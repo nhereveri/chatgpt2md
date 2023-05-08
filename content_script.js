@@ -147,5 +147,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         o.click();
       })();
     })();
+    setTimeout(() => {
+      console.log("La extensión ha finalizado su ejecución.");
+      chrome.runtime.sendMessage({ action: 'resetExtensionState' });
+    }, 5000);
   }
 });
