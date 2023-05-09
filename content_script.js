@@ -31,7 +31,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const div = document.createElement('div');
         div.innerHTML = html;
 
-        const tables = div.getElementsByTagName("table");
+        const tables = Array.from(div.getElementsByTagName("table")); // Copia los elementos 'table' a un array
 
         for (let i = 0; i < tables.length; i++) {
           const markdownTable = htmlToMarkdownTable(tables[i]);
@@ -75,12 +75,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       function convertList(html) {
         const div = document.createElement("div");
         div.innerHTML = html;
-        const uls = div.getElementsByTagName("ul");
-        const ols = div.getElementsByTagName("ol");
+        const uls = Array.from(div.getElementsByTagName("ul"));
+        const ols = Array.from(div.getElementsByTagName("ol"));
 
         for (const list of [...uls, ...ols]) {
           const type = list.tagName === "OL" ? "ol" : "ul";
-          const items = [...list.getElementsByTagName("li")].map((li) => {
+          const items = Array.from(list.getElementsByTagName("li")).map((li) => {
             return type === "ol" ? "1. " + li.textContent.trim() : "- " + li.textContent.trim();
           });
           const markdownList = "\n" + items.join("\n") + "\n";
@@ -97,15 +97,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const div = document.createElement("div");
         div.innerHTML = html;
         const links = div.getElementsByTagName("a");
-
-        for (const link of links) {
+        const linksArray = Array.from(links);
+        for (const link of linksArray) {
           const markdownLink = `[${link.textContent.trim()}](${link.href})`;
           const markdownLinkElement = document.createElement("div");
           markdownLinkElement.innerHTML = markdownLink;
-
           link.parentNode.replaceChild(markdownLinkElement.firstChild, link);
         }
-
         return div.innerHTML;
       }
 
@@ -148,7 +146,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })();
     })();
     setTimeout(() => {
-      console.log("La extensión ha finalizado su ejecución.");
       chrome.runtime.sendMessage({ action: 'resetExtensionState' });
     }, 5000);
   }
