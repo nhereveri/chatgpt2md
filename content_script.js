@@ -145,8 +145,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         o.click();
       })();
     })();
-    setTimeout(() => {
-      chrome.runtime.sendMessage({ action: 'resetExtensionState' });
-    }, 5000);
   }
 });
